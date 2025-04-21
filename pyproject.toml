@@ -14,7 +14,7 @@ authors = [
 ]
 dependencies = [
     "click>=8.1.0",
-    "google-generativeai>=0.3.0",
+    "google-genai>=1.10.0",
     "rich>=13.0.0",
     "pygments>=2.15.0",
 ]
