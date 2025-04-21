@@ -93,7 +93,10 @@ def cli(prompt: Optional[str], prompt_file: Optional[str], files: List[Path],
         if output_dir:
             output_directory = Path(output_dir)
             output_directory.mkdir(parents=True, exist_ok=True)
-        
+        # Track processed files
+        total_files = len(file_paths)
+        files_processed = 0       
+
         # Process each file
         for i, file in enumerate(file_paths):
             # Apply delay between files (not before the first file)
@@ -135,7 +138,10 @@ def cli(prompt: Optional[str], prompt_file: Optional[str], files: List[Path],
             with open(output_file, 'w') as f:
                 f.write(modified_code)
             
+            files_processed += 1
+            files_remaining = total_files - files_processed
             console.print(f"[green]Successfully wrote changes to {output_file}[/green]")
+            console.print(f"[cyan]Progress: {files_processed}/{total_files} files processed ({files_remaining} remaining)[/cyan]")
 
     except Exception as e:
         console.print(f"[red]Error: {str(e)}[/red]")
