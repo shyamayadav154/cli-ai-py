@@ -7,13 +7,15 @@ An AI-powered command-line tool for intelligent code editing and transformation.
 - Quick code refactoring using natural language prompts
 - Support for multiple programming languages
 - Preview changes before applying them
-- Backup creation for safety
 - Rich diff view of proposed changes
 
 ## Installation
 
+Install locally:
 ```bash
-pip install code-edit
+git clone https://github.com/your-repo/code-edit.git
+cd code-edit
+pip install .
 ```
 
 ## Usage
@@ -63,4 +65,4 @@ This tool:
 
 ## License
 
-MIT License 
+MIT License

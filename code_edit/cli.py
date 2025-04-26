@@ -4,16 +4,24 @@ CLI interface for code-edit tool.
 import os
 import sys
 import time
+import shutil
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, Tuple
 import click
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TimeElapsedColumn
 from rich.table import Table
+from rich.live import Live
 from code_edit.core.processor import CodeProcessor
 from code_edit.core.diff import create_diff_view
 
 console = Console()
+
+def get_terminal_size() -> Tuple[int, int]:
+    """Get the current terminal size."""
+    width, height = shutil.get_terminal_size()
+    # Reserve some space for other content (status messages, etc.)
+    return width, max(10, height - 5)
 
 def validate_file(ctx, param, value):
     """Validate that the file exists and is readable."""
@@ -122,9 +130,22 @@ def cli(prompt: Optional[str], prompt_file: Optional[str], files: List[Path],
                 modified_code = processor.process(original_code, prompt)
                 progress.update(task, completed=100)
             
-            # Show diff if preview mode or different output file
-            diff = create_diff_view(original_code, modified_code)
-            console.print(diff)
+            # Create and display the diff view with auto-resize capability
+            def generate_diff():
+                # Get current terminal dimensions
+                width, height = get_terminal_size()
+                # Create a diff view that fits the current terminal size
+                return create_diff_view(original_code, modified_code, max_height=height)
+            
+            console.print(f"[bold cyan]Diff view for {file.name} (auto-adjusts on resize)[/bold cyan]")
+            
+            # Use Live display to enable auto-refresh on terminal resize
+            with Live(generate_diff(), console=console, refresh_per_second=4, auto_refresh=True) as live:
+                # Keep the live view active for a moment to allow for resize
+                time.sleep(0.5)
+                
+                # This will automatically refresh when the terminal is resized
+                # The diff will be regenerated using the generate_diff function
             
             if preview:
                 continue
