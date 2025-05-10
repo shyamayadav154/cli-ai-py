@@ -5,9 +5,7 @@ import os
 from pathlib import Path
 from typing import Optional, Dict
 
-# import google.generativeai as genai
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 
 class CodeProcessor:
     """Handles code transformations using AI."""
@@ -21,10 +19,10 @@ class CodeProcessor:
                 "GOOGLE_API_KEY environment variable must be set. "
                 "Get your API key from https://makersuite.google.com/app/apikey"
             )
-        client = genai.Client(api_key=self.api_key)
-
+        genai.configure(api_key=self.api_key)
+        
         # Configure the model
-        self.model = client.models
+        self.model = genai.GenerativeModel(self.model_name)
 
     def get_model_info(self) -> Dict[str, str]:
         """
@@ -64,14 +62,12 @@ Here's the code to modify:
 
         # Get the AI response
         response = self.model.generate_content(
-            model=self.model_name,
-            contents=[system_prompt, user_prompt],
-            config=types.GenerateContentConfig(
+            [system_prompt, user_prompt],
+            generation_config=genai.types.GenerationConfig(
                 temperature=0.1,
                 candidate_count=1,
-                # max_output_tokens=8192,
-                thinking_config=types.ThinkingConfig(thinking_budget=0),
-            ),
+                max_output_tokens=8192,
+            )
         )
 
         # Extract and return the modified code
